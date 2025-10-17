@@ -4,18 +4,15 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth'
-import { AlertCircle, CheckCircle } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 
-export default function SignUpPage() {
+export default function LoginPage() {
   const router = useRouter()
-  const { signUp } = useAuth()
-  const [fullName, setFullName] = useState('')
+  const { signIn } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [companyName, setCompanyName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,20 +20,17 @@ export default function SignUpPage() {
     setLoading(true)
 
     try {
-      await signUp(email, password, fullName)
-      setSuccess(true)
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 2000)
+      await signIn(email, password)
+      router.push('/dashboard')
     } catch (err: any) {
-      setError(err.message || 'Failed to create account')
+      setError(err.message || 'Failed to sign in')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-blue-100 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-blue-100 px-4">
       <div className="max-w-md w-full">
         {/* Logo & Header */}
         <div className="text-center mb-8">
@@ -46,12 +40,12 @@ export default function SignUpPage() {
             </svg>
           </div>
           <h1 className="text-3xl font-bold text-gray-900">BuildVerify</h1>
-          <p className="text-gray-600 mt-2">Start verifying invoices with AI</p>
+          <p className="text-gray-600 mt-2">AI-Powered Invoice Verification</p>
         </div>
 
-        {/* Signup Card */}
+        {/* Login Card */}
         <div className="card">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Create Account</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Sign In</h2>
 
           {error && (
             <div className="mb-4 p-4 bg-danger-50 border border-danger-200 rounded-lg flex items-start gap-3">
@@ -60,45 +54,7 @@ export default function SignUpPage() {
             </div>
           )}
 
-          {success && (
-            <div className="mb-4 p-4 bg-success-50 border border-success-200 rounded-lg flex items-start gap-3">
-              <CheckCircle className="w-5 h-5 text-success-600 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-success-600">Account created! Redirecting...</p>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
-                Full Name
-              </label>
-              <input
-                id="fullName"
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="input-field"
-                placeholder="John Doe"
-                required
-                disabled={loading}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-2">
-                Company Name (Optional)
-              </label>
-              <input
-                id="companyName"
-                type="text"
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                className="input-field"
-                placeholder="Acme Construction"
-                disabled={loading}
-              />
-            </div>
-
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email Address
@@ -127,29 +83,36 @@ export default function SignUpPage() {
                 className="input-field"
                 placeholder="••••••••"
                 required
-                minLength={6}
                 disabled={loading}
               />
-              <p className="mt-1 text-xs text-gray-500">Must be at least 6 characters</p>
             </div>
 
             <button
               type="submit"
-              disabled={loading || success}
+              disabled={loading}
               className="btn-primary w-full"
             >
-              {loading ? 'Creating account...' : 'Create Account'}
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link href="/login" className="text-primary-600 hover:text-primary-700 font-semibold">
-                Sign in
+              Don't have an account?{' '}
+              <Link href="/signup" className="text-primary-600 hover:text-primary-700 font-semibold">
+                Sign up
               </Link>
             </p>
           </div>
+        </div>
+
+        {/* Demo Credentials */}
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-800 font-semibold mb-2">Demo Credentials:</p>
+          <p className="text-xs text-blue-700 font-mono">
+            Email: demo@buildverify.com<br />
+            Password: demo123
+          </p>
         </div>
       </div>
     </div>
